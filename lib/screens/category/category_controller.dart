@@ -5,6 +5,10 @@ class CategoryController extends GetxController{
   CategoryController(this.category);
 
   var stockPrices = <String, double>{}.obs;
+  var stockChanges = <String, double>{}.obs;
+  var stockChangePercent = <String, double>{}.obs;
+  var stockUp = <String, bool>{}.obs;
+
   final YahooFinanceDailyReader _reader = YahooFinanceDailyReader();
   Timer? _timer;
 
@@ -39,9 +43,20 @@ class CategoryController extends GetxController{
       stocks.map((stock) async{
         try{
           final response = await _reader.getDailyDTOs("$stock.NS");
-          if(response.candlesData.isNotEmpty){
+          if(response.candlesData.length >= 2){
             final latest = response.candlesData.last;
-            stockPrices[stock] = latest.close;
+            final prev = response.candlesData[response.candlesData.length-2];
+
+            final current = latest.close;
+            final previous = prev.close;
+
+            final change = current - previous;
+            final percent = (change/previous)*100;
+
+            stockPrices[stock] = current;
+            stockChanges[stock] = change;
+            stockChangePercent[stock] = percent;
+            stockUp[stock] = change >= 0;
           }
         }catch (e){
           print("Error fetching $stock:$e");
@@ -49,6 +64,26 @@ class CategoryController extends GetxController{
       })
     );
   }
+
+  Map<String, dynamic> getStockChange(String stock){
+    final change = stockChanges[stock];
+    final percent = stockChangePercent[stock];
+    final up = stockUp[stock];
+
+    if(change == null || percent == null || up == null){
+      return {
+        "change": 0.0,
+        "percent": 0.0,
+        "up":true,
+      };
+    }
+
+    return {
+      "change": change,
+      "percent": percent,
+      "up": up,
+    };
+  } 
 
   @override 
   // ignore: unused_element

@@ -4,7 +4,7 @@ description: "StockAtlas is a Flutter app that organizes and categorizes NSE sto
 publish_to: 'none' 
 
 
-version: 1.0.1+2
+version: 1.1.0+3
 
 environment:
   sdk: ^3.9.2

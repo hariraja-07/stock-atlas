@@ -10,7 +10,9 @@ class Home extends StatelessWidget{
     final categories = _data.categories;
     return Scaffold(
       appBar: AppBar(
-        title: Text("StockAtlas"),
+        title: Text("StockAtlas",style: TextStyle(fontSize: 24),),
+        backgroundColor: const Color.fromRGBO(69, 90, 100, 1.0),
+        foregroundColor: Colors.white,
       ),
       body: Container(
         margin: const EdgeInsets.symmetric(vertical: 20,horizontal: 20),

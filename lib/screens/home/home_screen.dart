@@ -1,6 +1,6 @@
 import 'package:stockatlas/commons.dart';
 
-class Home extends StatelessWidget{
+class Home extends StatelessWidget {
   Home({super.key});
 
   final _data = StockData();
@@ -10,26 +10,29 @@ class Home extends StatelessWidget{
     final categories = _data.categories;
     return Scaffold(
       appBar: AppBar(
-        title: Text("StockAtlas",style: TextStyle(fontSize: 24),),
+        title: Text("StockAtlas", style: TextStyle(fontSize: 24)),
         backgroundColor: const Color.fromRGBO(69, 90, 100, 1.0),
         foregroundColor: Colors.white,
       ),
       body: Container(
-        margin: const EdgeInsets.symmetric(vertical: 20,horizontal: 20),
+        margin: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
         child: Column(
           children: [
-            const Text('Stocks Categories',style: TextStyle(color: Colors.blueGrey,fontSize: 18),),
+            const Text(
+              'Stocks Categories',
+              style: TextStyle(color: Colors.blueGrey, fontSize: 18),
+            ),
 
             Expanded(
               child: ListView.builder(
                 itemCount: categories.length,
-                itemBuilder:(context, index) {
+                itemBuilder: (context, index) {
                   final category = categories[index];
-              
+
                   return ListTile(
                     title: Text(category),
-                    onTap: (){
-                      Get.to(()=> CategoryScreen(category: category));
+                    onTap: () {
+                      Get.to(() => CategoryScreen(category: category));
                     },
                   );
                 },
@@ -37,7 +40,7 @@ class Home extends StatelessWidget{
             ),
           ],
         ),
-      )
+      ),
     );
   }
 }

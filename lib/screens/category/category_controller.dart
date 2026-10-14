@@ -1,6 +1,6 @@
 import 'package:stockatlas/commons.dart';
 
-class CategoryController extends GetxController{
+class CategoryController extends GetxController {
   final String category;
   CategoryController(this.category);
 
@@ -51,54 +51,45 @@ class CategoryController extends GetxController{
     final stocks = StockData().stocks(category);
 
     await Future.wait(
-      stocks.map((stock) async{
-        try{
+      stocks.map((stock) async {
+        try {
           final response = await _reader.getDailyDTOs("$stock.NS");
-          if(response.candlesData.length >= 2){
+          if (response.candlesData.length >= 2) {
             final latest = response.candlesData.last;
-            final prev = response.candlesData[response.candlesData.length-2];
+            final prev = response.candlesData[response.candlesData.length - 2];
 
             final current = latest.close;
             final previous = prev.close;
 
             final change = current - previous;
-            final percent = (change/previous)*100;
+            final percent = (change / previous) * 100;
 
             stockPrices[stock] = current;
             stockChanges[stock] = change;
             stockChangePercent[stock] = percent;
             stockUp[stock] = change >= 0;
           }
-        }catch (e){
-          debugPrint("Error fetching $stock:$e");
+        } catch (e) {
+          debugPrint("Error fetching $stock: $e");
         }
-      })
+      }),
     );
   }
 
-  Map<String, dynamic> getStockChange(String stock){
+  Map<String, dynamic> getStockChange(String stock) {
     final change = stockChanges[stock];
     final percent = stockChangePercent[stock];
     final up = stockUp[stock];
 
-    if(change == null || percent == null || up == null){
-      return {
-        "change": 0.0,
-        "percent": 0.0,
-        "up":true,
-      };
+    if (change == null || percent == null || up == null) {
+      return {"change": 0.0, "percent": 0.0, "up": true};
     }
 
-    return {
-      "change": change,
-      "percent": percent,
-      "up": up,
-    };
-  } 
+    return {"change": change, "percent": percent, "up": up};
+  }
 
-  @override 
-  // ignore: unused_element
-  void onClose(){
+  @override
+  void onClose() {
     _timer?.cancel();
     super.onClose();
   }

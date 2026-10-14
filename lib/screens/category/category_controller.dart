@@ -12,28 +12,39 @@ class CategoryController extends GetxController{
   final YahooFinanceDailyReader _reader = YahooFinanceDailyReader();
   Timer? _timer;
 
-  final int marketOpenHour = 9;
-  final int marketCloseHour = 16;
+  /// NSE trading hours: 9:15 AM - 3:30 PM IST, Monday to Friday.
+  /// (Exchange holidays are not handled yet.)
+  static const int _marketOpenMinutes = 9 * 60 + 15;
+  static const int _marketCloseMinutes = 15 * 60 + 30;
 
-  @override  
-  void onInit(){
-    super.onInit();
-    _fetchAndSchedule();
+  static bool isMarketOpen(DateTime utc) {
+    final ist = utc.add(const Duration(hours: 5, minutes: 30));
+
+    if (ist.weekday == DateTime.saturday || ist.weekday == DateTime.sunday) {
+      return false;
+    }
+
+    final minutesSinceMidnight = ist.hour * 60 + ist.minute;
+    return minutesSinceMidnight >= _marketOpenMinutes &&
+        minutesSinceMidnight < _marketCloseMinutes;
   }
 
-  void _fetchAndSchedule() async {
-    final now = DateTime.now();
+  @override
+  void onInit() {
+    super.onInit();
+    fetchAllPrices();
+    _scheduleRefresh();
+  }
 
-    bool marketOpen = now.hour >= marketOpenHour && now.hour < marketCloseHour;
-
-    await fetchAllPrices();
-
-    if(marketOpen){
-      _timer?.cancel();
-      _timer = Timer.periodic(Duration(seconds: 15), (_) async {
-        await fetchAllPrices();
-      });
-    }
+  void _scheduleRefresh() {
+    _timer?.cancel();
+    // The timer always runs; every tick checks whether the market is open, so
+    // polling starts and stops automatically (and resumes after market close).
+    _timer = Timer.periodic(const Duration(seconds: 15), (_) {
+      if (isMarketOpen(DateTime.now().toUtc())) {
+        fetchAllPrices();
+      }
+    });
   }
 
   Future<void> fetchAllPrices() async {

@@ -54,7 +54,7 @@ class CategoryScreen extends StatelessWidget {
             }),
             onTap: () {
               final price = controller.stockPrices[stock];
-              print('Tapped $stock: $price');
+              debugPrint('Tapped $stock: $price');
             },
           );
         },

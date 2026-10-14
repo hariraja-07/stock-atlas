@@ -70,7 +70,7 @@ class CategoryController extends GetxController{
             stockUp[stock] = change >= 0;
           }
         }catch (e){
-          print("Error fetching $stock:$e");
+          debugPrint("Error fetching $stock:$e");
         }
       })
     );
